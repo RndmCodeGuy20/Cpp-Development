@@ -1,31 +1,37 @@
 #include <iostream>
 using namespace std;
 
-class Employee {
+class Employee
+{
 private:
 	string Name;
 	string Company;
 	int Age;
 
 public:
-	void setName(string name) {
+	void setName(string name)
+	{
 		Name = name;
 	}
 
-	string getName() {
+	string getName()
+	{
 		return Name;
 	}
 
-	void setAge(int age) {
+	void setAge(int age)
+	{
 		Age = age;
 	}
 
-	int getAge() {
+	int getAge()
+	{
 		return Age;
 	}
 };
 
-int main() {
+int main()
+{
 	Employee emp;
 	emp.setName("Shantanu");
 	emp.setAge(23);
