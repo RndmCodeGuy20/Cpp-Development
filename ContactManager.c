@@ -22,21 +22,23 @@ struct ContactManager
     char Name[20];
 } contacts;
 
-int contact;
+int contact, numcon = 0;
 char search[20], searchName[20];
+
 FILE *fp;
 FILE *ftemp;
 
 void Add()
 {
+    fp = fopen("ContactsList.dll", "a"); // Storing all the data in a dll (Dynamic Link Library) file. DLL, because this file contains instructions that other programs can call upon to do certain things.
 
-    fp = fopen("ContactsList.dll", "a");
+    printf("\n\t\t~~~~~~~~~~~~~~~~~~~~~~~~~~\n\t\t\tAdd Contact(s)\n\t\t~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n");
 
-    for (;;)
+    do
     {
         fflush(stdin);
 
-        printf("Enter contact name : (input blank space if no contact / contact already added) : ");
+        printf("\n\nEnter contact name : (input blank space if no contact / contact already added) : ");
         scanf("%[^\n]", &contacts.Name);
 
         if (stricmp(contacts.Name, " ") == 0)
@@ -45,57 +47,56 @@ void Add()
         }
         fflush(stdin);
 
-        printf("Phone : ");
+        printf("Add Phone Number : ");
         scanf("%ld", &contacts.phoneNum);
+
+        if (contacts.phoneNum >= 99999 || contacts.phoneNum <= 90000)
+        {
+            printf("\n\n INVALID CONTACT NUMBER!!! \n\n");
+            break;
+        }
 
         fflush(stdin);
 
-        printf("\n");
+        numcon++;
 
         fwrite(&contacts, sizeof(contacts), 1, fp);
-    }
+    } while (1);
+    printf("\tNumber of Contacts Added : %d", numcon);
 
     fclose(fp);
 }
 
 void List()
 {
+    printf("\n\t\t~~~~~~~~~~~~~~~~~~~~~~~~~~\n\t\t\tContact List\n\t\t~~~~~~~~~~~~~~~~~~~~~~~~~~\n\nName\t\tPhone Number\n.-.-.-.-.-.-.-.-.-.-.-.-.-.-.\n\n");
 
-    printf("\n\t\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\t\t\tContact List\n\t\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\nName\t\tPhone Number\n.-.-.-.-.-.-.-.-.-.-.-.-.-.-.\n\n");
+    contact = 0;
 
-    for (int i = 97; i <= 122; i++)
+    for (int i = 97; i <= 122; i++) // i = ASCII value, for a valid name, name should start with an alphabet.
     {
         fp = fopen("ContactsList.dll", "r");
 
-        fflush(stdin);
+        // fflush(stdin);
 
-        contact = 0;
-
-        while (fread(&contacts, sizeof(contacts), 1, fp) == 1)
+        while (fread(&contacts, sizeof(contacts), 1, fp) == 1) // (pointer, size, Num of ele., Pointer to FILE object [Input ])
         {
-            if (contacts.Name[0] == i || contacts.Name[0] == i - 32)
-
+            if (contacts.Name[0] == i || contacts.Name[0] == i - 32) // Checking the first character of every entry.
             {
-                printf("\nName\t\t: %s\nPhone\t\t: %ld\n", contacts.Name, contacts.phoneNum);
+                printf("\nName\t\t: %s\nPhone\t\t: %ld\n\n.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-", contacts.Name, contacts.phoneNum);
 
                 contact++;
             }
         }
 
-        if (contact != 0)
-        {
-            printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ [%c]-(%d)\n\n", i - 32, contact);
-            getch();
-        }
-
         fclose(fp);
     }
+    printf("\tTotal Contacts : %d", contact);
 }
 
 void Search()
 {
     int trychoice;
-    int l;
 
     do
     {
@@ -106,21 +107,17 @@ void Search()
 
         scanf("%[^\n]", &search);
 
-        l = strlen(search);
-
         fp = fopen("ContactsList.dll", "r");
-
 
         printf("\n\nSearch result for '%s' \n.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-\n", search);
 
         while (fread(&contacts, sizeof(contacts), 1, fp) == 1)
         {
-
-            for (int i = 0; i <= l; i++)
-
+            for (int i = 0; i <= strlen(search); i++)
+            {
                 searchName[i] = contacts.Name[i];
-
-            searchName[l] = '\0';
+            }
+            searchName[strlen(search)] = '\0';
 
             if (stricmp(searchName, search) == 0)
             {
@@ -131,17 +128,16 @@ void Search()
         }
 
         if (contact == 0)
-
+        {
             printf("\nSorry! No matching contacts found!!!");
-
+        }
         else
-
+        {
             printf("\n%d match(s) found for your searched contact!", contact);
-
+        }
         fclose(fp);
 
         printf("\nSearch Another Contact?\n\n\t[1] Yes\t\t[0] No\n\t");
-
         scanf("%d", &trychoice);
 
     } while (trychoice == 1);
@@ -149,7 +145,6 @@ void Search()
 
 void Edit()
 {
-
     fp = fopen("ContactsList.dll", "r");
 
     ftemp = fopen("temporary.dat", "w");
@@ -226,23 +221,24 @@ int main()
     char exitchoice;
 
 label:
-    printf("\n\t ~~~~ Contact Manager Program ~~~~");
+    printf("\n\t\t     ~~~~ Shantanu Mane's ~~~~\n");
+    printf("\n\t\t ~~~~ Contact Manager Program ~~~~");
 
-    printf("\n\n\n\t\t\t~~~~ MAIN MENU  ~~~~\n\t\t~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~\n\t\t[Option : 1] Add New Contact\n\t\t[Option : 2] List Contacts\n\t\t[Option : 3] Search a Contact\n\t\t[Option : 4] Edit a Contact\n\t\t[Option : 5] Delete a Contact\n\t\t[Option : 0] Exit Program\n\t\t~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~\n\t\t");
+    printf("\n\n\n\t\t\t~~~~ MAIN MENU ~~~~\n\t\t~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~\n\t\t[Option : 1] Add New Contact\n\t\t[Option : 2] List Contacts\n\t\t[Option : 3] Search a Contact\n\t\t[Option : 4] Edit a Contact\n\t\t[Option : 5] Delete a Contact\n\t\t[Option : 0] Exit Program\n\t\t~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~\n\t\t");
 
-    printf("Enter the choice : ");
+    printf("\n\t\tEnter the choice : ");
     scanf("%d", &choice);
 
     switch (choice)
     {
     case 0:
         fflush(stdin);
-        printf("Are you sure you want to exit? [Y/N]");
+        printf("Are you sure you want to exit? [Y = Yes/N = No] : ");
         scanf("%c", &exitchoice);
 
         if (exitchoice == 'Y')
         {
-            break;
+            goto end;
         }
         else if (exitchoice == 'N')
         {
@@ -291,6 +287,6 @@ label:
         Default();
         break;
     }
-
+    end:
     return 0;
 }
