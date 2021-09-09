@@ -1,3 +1,16 @@
+/**
+ * @file ContactManager.c
+ * @author Shantanu Mane (@RndmCodeGuy20) (shantanu.mane.200@outlook.com)
+ * @brief A contact manager program using C language which can perform CRUD operations.
+ * @version  420.69
+ * @date 2021-09-09
+ * 
+ * @copyright Copyright (c) 2021
+ * 
+ * @ref 1. Let Us C - Yashwant Kanetkar
+ *      2. Programming in ANSI C - E. Balagurusamy
+ *      3. https://www.codewithc.com/mini-project-in-c-contact-management-system/
+ */
 #include <stdio.h>
 #include <conio.h>
 #include <math.h>

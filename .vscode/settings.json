@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "*.vhd": "vhdl",
+        "conio.h": "c"
+    }
+}
