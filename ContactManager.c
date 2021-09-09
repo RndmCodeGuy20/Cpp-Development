@@ -215,6 +215,8 @@ void Delete()
 
 void Default(){
     printf("Wrong Choice!!! Select any choice from the main menu : ");
+
+    main();
 }
 
 int main()
