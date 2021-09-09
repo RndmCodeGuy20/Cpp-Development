@@ -9,7 +9,6 @@
  * 
  * @ref 1. Let Us C - Yashwant Kanetkar
  *      2. Programming in ANSI C - E. Balagurusamy
- *      3. https://www.codewithc.com/mini-project-in-c-contact-management-system/
  */
 #include <stdio.h>
 #include <conio.h>
