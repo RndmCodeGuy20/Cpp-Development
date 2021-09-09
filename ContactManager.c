@@ -30,7 +30,6 @@ FILE *ftemp;
 
 void Add()
 {
-    system("cls");
 
     fp = fopen("ContactsList.dll", "a");
 
@@ -38,18 +37,16 @@ void Add()
     {
         fflush(stdin);
 
-        printf("Enter contact name : (input blank space if no contact) : ");
-
+        printf("Enter contact name : (input blank space if no contact / contact already added) : ");
         scanf("%[^\n]", &contacts.Name);
 
-        if (stricmp(contacts.Name, "") == 0 || stricmp(contacts.Name, " ") == 0)
-
+        if (stricmp(contacts.Name, " ") == 0)
+        {
             break;
-
+        }
         fflush(stdin);
 
         printf("Phone : ");
-
         scanf("%ld", &contacts.phoneNum);
 
         fflush(stdin);
@@ -64,7 +61,6 @@ void Add()
 
 void List()
 {
-    system("cls");
 
     printf("\n\t\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\t\t\tContact List\n\t\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\nName\t\tPhone Number\n.-.-.-.-.-.-.-.-.-.-.-.-.-.-.\n\n");
 
@@ -77,7 +73,6 @@ void List()
         contact = 0;
 
         while (fread(&contacts, sizeof(contacts), 1, fp) == 1)
-
         {
             if (contacts.Name[0] == i || contacts.Name[0] == i - 32)
 
@@ -100,7 +95,6 @@ void List()
 
 void Search()
 {
-    system("cls");
     int trychoice;
     int l;
 
@@ -117,7 +111,6 @@ void Search()
 
         fp = fopen("ContactsList.dll", "r");
 
-        system("cls");
 
         printf("\n\nSearch result for '%s' \n.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-\n", search);
 
@@ -157,7 +150,6 @@ void Search()
 
 void Edit()
 {
-    system("cls");
 
     fp = fopen("ContactsList.dll", "r");
 
@@ -169,9 +161,10 @@ void Edit()
 
     scanf("%[^\n]", searchName);
 
-    while (fread(&contacts, sizeof(contacts), 1, fp) == 1){
-
-        if (stricmp(searchName, contacts.Name) != 0){
+    while (fread(&contacts, sizeof(contacts), 1, fp) == 1)
+    {
+        if (stricmp(searchName, contacts.Name) != 0)
+        {
             fwrite(&contacts, sizeof(contacts), 1, ftemp);
         }
     }
@@ -181,13 +174,11 @@ void Edit()
     printf("\n\nThe contact you chose is : '%s'\n\n", searchName);
 
     printf("New Name : ");
-
     scanf("%[^\n]", &contacts.Name);
 
     fflush(stdin);
 
     printf("New Phone : ");
-
     scanf("%ld", &contacts.phoneNum);
 
     fflush(stdin);
@@ -203,7 +194,6 @@ void Edit()
 
 void Delete()
 {
-    system("cls");
     fflush(stdin);
 
     printf("\n\n\tDELETE CONTACT(s)\n\t.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-\n\tEnter the name of the contact you want to delete : ");
@@ -226,10 +216,9 @@ void Delete()
     rename("temporary.dat", "ContactsList.dll");
 }
 
-void Default(){
+void Default()
+{
     printf("Wrong Choice!!! Select any choice from the main menu : ");
-
-    main();
 }
 
 int main()
@@ -291,16 +280,17 @@ label:
 
     scanf("%d", &Rechoice);
 
-    switch (Rechoice){
-        case 1:
-            goto label;
+    switch (Rechoice)
+    {
+    case 1:
+        goto label;
 
-        case 0:
-            break;
+    case 0:
+        break;
 
-        default:
-            Default();
-            break;
+    default:
+        Default();
+        break;
     }
 
     return 0;
