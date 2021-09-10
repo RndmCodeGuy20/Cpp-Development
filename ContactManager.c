@@ -8,10 +8,11 @@
  * @copyright Copyright (c) 2021
  * 
  * @ref 1. Let Us C - Yashwant Kanetkar
- *      2. Programming in ANSI C - E. Balagurusamy
+ *      2. Programming in ANSI C - E. Balagurusamy -> Test Project Appendix IV
  */
 #include <stdio.h>
 #include <conio.h>
+#include <dos.h>
 #include <math.h>
 #include <string.h>
 #include <stdlib.h>
@@ -27,6 +28,31 @@ char search[20], searchName[20];
 
 FILE *fp;
 FILE *ftemp;
+
+/**
+ * @brief Functions and their parameters.
+ * 
+ * @brief stricmp(str1,str2)
+ * 
+ *       @type     @return
+ *  |------------|---------|
+ *  |str1 > str2 | 1       |
+ *  |------------|---------|
+ *  |str1 == str2| 0       |
+ *  |------------|---------|
+ *  |str1 < str2 | -1      |
+ *  |------------|---------|
+ * @brief fread(array where the elements are stored, size of elements , num of elements, stream to be read)
+ *                 @type                     @return
+ *  |--------------------------------------|---------|
+ *  |number of elements read               | 1       |
+ *  |--------------------------------------|---------|
+ *  |if size of number of elements are zero| 0       |
+ *  |--------------------------------------|---------|
+ * 
+ * @brief Similarly fwrite(param1, param2, param3, param4)
+ * 
+ */
 
 void Add()
 {
@@ -78,18 +104,28 @@ void List()
         fp = fopen("ContactsList.dll", "r");
 
         // fflush(stdin);
-
-        while (fread(&contacts, sizeof(contacts), 1, fp) == 1) // (pointer, size, Num of ele., Pointer to FILE object [Input ])
+        if (fp == NULL)
         {
-            if (contacts.Name[0] == i || contacts.Name[0] == i - 32) // Checking the first character of every entry.
-            {
-                printf("\nName\t\t: %s\nPhone\t\t: %ld\n\n.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-", contacts.Name, contacts.phoneNum);
-
-                contact++;
-            }
+            printf("\nFile could not be opened!!!");
         }
+        else if (ferror(fp) != 0)
+        {
+            printf("\nAn error has occurred in opening the file!");
+        }
+        else
+        {
+            while (fread(&contacts, sizeof(contacts), 1, fp) == 1) // (pointer, size, Num of ele., Pointer to FILE object [Input])
+            {
+                if (contacts.Name[0] == i || contacts.Name[0] == i - 32) // Checking the first character of every entry.
+                {
+                    printf("\nName\t\t: %s\nPhone\t\t: %ld\n\n.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-", contacts.Name, contacts.phoneNum);
 
-        fclose(fp);
+                    contact++;
+                }
+            }
+
+            fclose(fp);
+        }
     }
     printf("\tTotal Contacts : %d", contact);
 }
@@ -113,21 +149,21 @@ void Search()
 
         while (fread(&contacts, sizeof(contacts), 1, fp) == 1)
         {
-            for (int i = 0; i <= strlen(search); i++)
+            for (int i = 0; i <= strlen(search); i++) // Single for loop to get the name of the contact "String after a space will also be considered."
             {
-                searchName[i] = contacts.Name[i];
+                searchName[i] = contacts.Name[i]; // searchName variable being assigned the name "character - by - character" from contacts.Name variable.
             }
-            searchName[strlen(search)] = '\0';
+            searchName[strlen(search)] = '\0'; // Last character of every string must be the *null* character.
 
-            if (stricmp(searchName, search) == 0)
+            if (stricmp(searchName, search) == 0) // Check if the name read from the file matches the string(name) the user wants to search.
             {
                 printf("\nName\t: %s\nPhone Number\t: %ld\n", contacts.Name, contacts.phoneNum);
 
-                contact++;
+                contact++; // Counter variable for the number of search results found.
             }
         }
 
-        if (contact == 0)
+        if (contact == 0) // Using the counter variable to display the number of matching contacts found.
         {
             printf("\nSorry! No matching contacts found!!!");
         }
@@ -138,21 +174,27 @@ void Search()
         fclose(fp);
 
         printf("\nSearch Another Contact?\n\n\t[1] Yes\t\t[0] No\n\t");
-        scanf("%d", &trychoice);
+        scanf("%d", &trychoice); // Giving the user a choice if he/she wants to search another contact.
 
     } while (trychoice == 1);
 }
 
 void Edit()
 {
-    fp = fopen("ContactsList.dll", "r");
+    /**
+     * @brief Algorithm used here is taken from the book "Programming in C - Balaguruswamy -> Appendix IV Pg. 503 -> "Backup Database"".
+     * 
+     * @brief A temporary copy of the original file is created and edited and the original file is then deleted from the system. The temporary file created earlier is then converted and used as the original file.
+     */
 
+    List();
+
+    fp = fopen("ContactsList.dll", "r");
     ftemp = fopen("temporary.dat", "w");
 
     fflush(stdin);
 
-    printf("EDIT CONTACT\n.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-\n\n\tEnter the name of contact you want to edit : ");
-
+    printf("\n\tEDIT CONTACT\n.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-\n\n\tFrom the above list : \n\n\tEnter the name of contact you want to edit : ");
     scanf("%[^\n]", searchName);
 
     while (fread(&contacts, sizeof(contacts), 1, fp) == 1)
@@ -161,48 +203,70 @@ void Edit()
         {
             fwrite(&contacts, sizeof(contacts), 1, ftemp);
         }
-    }
-
+    } // Data from the original file is copied and written in the temporary file UNLESS and UNTIL the data to be altered is reached. Once the point is reached the contact to be edited is skipped and the rest of the contacts are written normally.
     fflush(stdin);
 
-    printf("\n\nThe contact you chose is : '%s'\n\n", searchName);
+    printf("\n\nThe contact you want to edit is : '%s'\n\n", searchName);
+
+reedit:
 
     printf("New Name : ");
     scanf("%[^\n]", &contacts.Name);
-
+    if (stricmp(contacts.Name, " ") == 0)
+    {
+        printf("\tINVALID NAME!!!");
+        goto reedit;
+    }
     fflush(stdin);
 
     printf("New Phone : ");
     scanf("%ld", &contacts.phoneNum);
 
+    if (contacts.phoneNum >= 99999 || contacts.phoneNum <= 90000)
+    {
+        printf("\n\n INVALID CONTACT NUMBER!!! \n\n");
+        goto reedit;
+    }
+
     fflush(stdin);
 
     fwrite(&contacts, sizeof(contacts), 1, ftemp);
+    // The contact to be edited is changed here and added afterwards.
 
     fclose(fp);
     fclose(ftemp);
 
     remove("ContactsList.dll");
     rename("temporary.dat", "ContactsList.dll");
+
+    // The original file is then removed and the new file is then converted to the original one.
 }
 
 void Delete()
 {
+    /**
+     * @brief Algorithm used here is taken from the book "Programming in C - Balaguruswamy -> Appendix IV Pg. 503 -> "Backup Database"".
+     * 
+     * @brief A temporary copy of the original file is created and edited and the original file is then deleted from the system. The temporary file created earlier is then converted and used as the original file.
+     */
+
+    List();
+
     fflush(stdin);
 
-    printf("\n\n\tDELETE CONTACT(s)\n\t.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-\n\tEnter the name of the contact you want to delete : ");
+    printf("\n\n\tDELETE CONTACT(s)\n\t.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-\n\n\tFrom the above list : \n\tEnter the name of the contact you want to delete : ");
     scanf("%[^\n]", &searchName);
 
     fp = fopen("ContactsList.dll", "r");
     ftemp = fopen("temporary.dat", "w");
 
     while (fread(&contacts, sizeof(contacts), 1, fp) != 0)
-
+    {
         if (stricmp(searchName, contacts.Name) != 0)
         {
             fwrite(&contacts, sizeof(contacts), 1, ftemp);
-        }
-
+        } // Data from the original file is copied and written in the temporary file UNLESS and UNTIL the data to be altered is reached. Once the point is reached the contact to be deleted is skipped and the rest of the contacts are written normally.
+    }
     fclose(fp);
     fclose(ftemp);
 
@@ -210,7 +274,7 @@ void Delete()
     rename("temporary.dat", "ContactsList.dll");
 }
 
-void Default()
+void WrongChoice()
 {
     printf("Wrong Choice!!! Select any choice from the main menu : ");
 }
@@ -227,7 +291,7 @@ label:
     printf("\n\n\n\t\t\t~~~~ MAIN MENU ~~~~\n\t\t~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~\n\t\t[Option : 1] Add New Contact\n\t\t[Option : 2] List Contacts\n\t\t[Option : 3] Search a Contact\n\t\t[Option : 4] Edit a Contact\n\t\t[Option : 5] Delete a Contact\n\t\t[Option : 0] Exit Program\n\t\t~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~\n\t\t");
 
     printf("\n\t\tEnter the choice : ");
-    scanf("%d", &choice);
+    scanf("%d", &choice);   // Take input from the user on what he/she wants to perform.
 
     switch (choice)
     {
@@ -266,11 +330,12 @@ label:
         break;
 
     default:
-        Default();
+        WrongChoice();
         break;
     }
     int Rechoice;
 
+rechoice:
     printf("\n\n\nAre you sure you want to exit? \n\n\t[1] Return to Main Menu!\t\t[0] Exit the Program!\n");
 
     scanf("%d", &Rechoice);
@@ -284,9 +349,11 @@ label:
         break;
 
     default:
-        Default();
-        break;
+        WrongChoice();
+        goto rechoice;
     }
-    end:
+end:
+
+    system("cls");
     return 0;
 }
