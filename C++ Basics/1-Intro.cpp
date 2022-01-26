@@ -1,10 +1,10 @@
 #include <bits/stdc++.h>
-#include <iostream>
+// #include <iostream>
 using namespace std;
 
 int main(){
 	//* Single Line Comment.
-	/*
+	/**
 	* Multi 
 	* Line 
 	* Comment
@@ -27,6 +27,11 @@ int main(){
 
 	cout << s << endl << s[2] << endl;
 	printf("%d \n%f \n%c \n%lf", a, b, c, d);
+
+	cout << "string";
+	cin >> a;
+	scanf();
+
 
 	return 0;
 }
